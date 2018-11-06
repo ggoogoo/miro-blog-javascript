@@ -1,0 +1,137 @@
+
+<html>
+<head>
+  <title>Miro Inside 익명채팅</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font: 13px Helvetica, Arial;
+    }
+
+    form {
+      background: #000;
+      padding: 3px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+    }
+
+    form input {
+      border: 0;
+      padding: 10px;
+      width: 90%;
+      margin-right: .5%;
+    }
+
+    form button {
+      width: 9%;
+      background: rgb(130, 224, 255);
+      border: none;
+      padding: 10px;
+    }
+
+    #messages {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    #messages li {
+      padding: 5px 10px;
+    }
+
+    #messages li:nth-child(odd) {
+      background: #eee;
+    }
+  </style>
+
+
+  <link rel='stylesheet' href='/js/LayerSlider/static/css/layerslider.css' type='text/css' media='all' />
+  <link rel='stylesheet' href='/css/shortcodes.css' type='text/css' media='all' />
+  <link rel='stylesheet' href='/js/revslider/rs-plugin/css/settings.css' type='text/css' media='all' />
+  <link rel='stylesheet' href='/css/woocommerce-layout.css' type='text/css' media='all' />
+  <link rel='stylesheet' href='/css/woocommerce-smallscreen.css' type='text/css' media='only screen and (max-width: 768px)' />
+  <link rel='stylesheet' href='/css/woocommerce.css' type='text/css' media='all' />
+  <link rel='stylesheet' href='/css/ish-fontello.css' type='text/css' media='all' />
+  <link rel='stylesheet' href='/css/style.css' type='text/css' media='all' />
+  <link rel='stylesheet' href='/css/tooltipster.css' type='text/css' media='all' />
+  <link rel='stylesheet' href='/css/main-options.css' type='text/css' media='all' />
+  <link rel='stylesheet' href='/css/main-options_2.css' type='text/css' media='all' />
+  <link rel='stylesheet' href='/css/jquery.fancybox.css' type='text/css' media='all' />
+  <link rel='stylesheet' href='/js/mediaelement/mediaelementplayer.min.css' type='text/css' media='all' />
+  <link rel='stylesheet' href='/js/mediaelement/wp-mediaelement.css' type='text/css' media='all' />
+  <link rel='stylesheet' href='/css/js_composer.min.css' type='text/css' media='all' />
+
+
+</head>
+<body>
+<div id="wrap" style="overflow: auto; height:100vh;">
+
+
+  <div style="display:none">
+    <input id="RealName" value="<%=user.name%>"><%=user.name%></input>
+  </div>
+
+  <ul id="messages" style="padding-bottom: 10vh;"></ul>
+
+<form style="background: #eeeeee" action="">
+  <input style="background-color: #fcd24ba3; color: #000000" placeholder="익명 채팅방이지만 지나친 발언은 제재의 사유가 될 수 있습니다." id="m" autocomplete="off"/>
+  <button class = "ish-sc_button" style="color: #000000; background-color: #fcd24b" onclick="scrollDown()">Send</button>
+</form>
+</div>
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script type='text/javascript'>
+  function scrollDown(){
+    const $messageTextBox = $('#wrap');
+    $messageTextBox.scrollTop($messageTextBox[0].scrollHeight);
+  }
+
+
+
+  $(() => {
+    const name = prompt('닉네임을 입력해 주세요.');
+    const Watcher = document.getElementById('RealName').value
+    const socket = io();
+    let room = ['room1', 'room2'];
+    let num = 0;
+
+    socket.emit('joinRoom', num, name);
+
+    $('select').change(() => {
+      socket.emit('leaveRoom', num, name);
+      num++;
+      num = num % 2;
+      socket.emit('joinRoom', num, name);
+    });
+
+
+    $('form').submit(() => {
+      socket.emit('chat message', num, name, $('#m').val());
+      $('#m').val('');
+      return false;
+    });
+
+    socket.on('chat message', (name, msg) => {
+      $('#messages').append($('<li>').text(name + '  :  ' +
+        msg));
+    });
+
+    socket.on('leaveRoom', (num, name) => {
+      $('#messages').append($('<li>').text(name + '    님께서 접속을 종료했습니다. '
+        +' :~('));
+    });
+
+    socket.on('joinRoom', (num, name) => {
+      $('#messages').append($('<li>').text(name + '    님께서 접속했습니다. '
+        + ':~)'));
+    });
+  });
+</script>
+</body>
+</html>

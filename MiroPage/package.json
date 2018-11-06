@@ -1,0 +1,25 @@
+{
+  "name": "miropage",
+  "version": "1.0.0",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "keywords": [],
+  "description": "",
+  "dependencies": {
+    "app": "^0.1.0",
+    "axios": "^0.18.0",
+    "bcrypt": "^3.0.0",
+    "body-parser": "^1.18.3",
+    "ejs": "^2.6.1",
+    "express": "^4.16.3",
+    "express-session": "^1.15.6",
+    "http": "0.0.0",
+    "mongoose": "^5.2.7",
+    "multer": "^1.3.1",
+    "socket.io": "^2.1.1"
+  }
+}
